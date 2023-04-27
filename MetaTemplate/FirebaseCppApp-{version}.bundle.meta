@@ -3,7 +3,7 @@ guid: b47463c3eacde43c4a1f75d2f6e9c2e4
 labels:
 - gvh
 - gvh_version-{version}
-- gvhp_exportpath-Firebase/Plugins/arm64/FirebaseCppApp-{version}.bundle
+- gvhp_exportpath-Firebase/Plugins/arm64/FirebaseCppApp-{name_version}.bundle
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2

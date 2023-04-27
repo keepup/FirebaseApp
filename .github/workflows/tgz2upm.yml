@@ -3,7 +3,7 @@ name: .tgz 2 Unity Package
 on:
   push:
     branches:
-      - main
+      - ttt
   workflow_dispatch:
 jobs:
   build:
@@ -11,12 +11,13 @@ jobs:
     env:
       base: https://dl.google.com/games/registry/unity/com.google.firebase.app/com.google.firebase.app
       version: 10.7.0
+      so_version: 10_7_0
     steps:
       - uses: actions/checkout@v3
       - name: Config
         run: |
-          git config --local user.email "tianmaodi@gmail.com"
-          git config --local user.name "Tian"
+          git config --local user.email "github-action@wulato.com"
+          git config --local user.name "wulato-bot"
       
       - name: Download Package
         run: |
@@ -27,9 +28,15 @@ jobs:
           tar -xvzf content.tgz
           rm content.tgz
           ls
-          
+      
+      - name: Split MacOS Bundle for Desktop Support - Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-X_X_X.bundle
+        run: |
+          mkdir Staging/package/Firebase/Plugins/arm64
+          lipo -remove x86_64 Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.so_version }}.bundle -o Staging/package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.so_version }}.bundle
+          lipo -remove arm64 Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.so_version }}.bundle -o Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.so_version }}.bundle
       - name: Commit
         run: |
           git add --a
-          git commit -m "Firebase SDK v${{ env.version }}"
+          git commit -m "Package Update ${{ env.version }}"
           git push origin
+     

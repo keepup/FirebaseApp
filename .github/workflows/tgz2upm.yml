@@ -25,6 +25,7 @@ jobs:
           curl ${{ env.base }}-${{ env.version }}.tgz --output package.tgz
           tar -xvzf package.tgz
           rm package.tgz
+          ls
       
       - name: Split MacOS Bundle
         run: |

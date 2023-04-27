@@ -26,8 +26,8 @@ jobs:
           rm -fr Tmp
           mkdir Tmp
           cp MetaTemplte/FirebaseCppApp-{version}.bundle.meta Tmp/FirebaseCppApp-${{ env.name_version }}.bundle.meta
-          sed -i '' 's/{version}/${{ env.version }}/' Tmp/FirebaseCppApp-${{ env.name_version }}.bundle.meta
-          sed -i '' 's/{name_version}/${{ env.name_version }}/' Tmp/FirebaseCppApp-${{ env.name_version }}.bundle.meta
+          sed -i 's/{version}/${{ env.version }}/g' Tmp/FirebaseCppApp-${{ env.name_version }}.bundle.meta
+          sed -i 's/{name_version}/${{ env.name_version }}/g' Tmp/FirebaseCppApp-${{ env.name_version }}.bundle.meta
       
       - name: Commit
         run: |

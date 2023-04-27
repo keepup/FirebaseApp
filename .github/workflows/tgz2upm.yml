@@ -3,7 +3,7 @@ name: .tgz 2 Unity Package
 on:
   push:
     branches:
-      - ttt
+      - action
   workflow_dispatch:
 jobs:
   build:
@@ -11,7 +11,7 @@ jobs:
     env:
       base: https://dl.google.com/games/registry/unity/com.google.firebase.app/com.google.firebase.app
       version: 10.7.0
-      so_version: 10_7_0
+      name_version: 10_7_0
     steps:
       - uses: actions/checkout@v3
       - name: Config
@@ -21,22 +21,37 @@ jobs:
       
       - name: Download Package
         run: |
-          rm -rf Staging
-          mkdir Staging
-          cd Staging
-          curl ${{ env.base }}-${{ env.version }}.tgz --output content.tgz
-          tar -xvzf content.tgz
-          rm content.tgz
-          ls
+          rm -rf package
+          curl ${{ env.base }}-${{ env.version }}.tgz --output package.tgz
+          tar -xvzf package.tgz
+          rm package.tgz
       
-      - name: Split MacOS Bundle for Desktop Support - Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-X_X_X.bundle
+      - name: Split MacOS Bundle
         run: |
-          mkdir Staging/package/Firebase/Plugins/arm64
-          lipo -remove x86_64 Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.so_version }}.bundle -o Staging/package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.so_version }}.bundle
-          lipo -remove arm64 Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.so_version }}.bundle -o Staging/package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.so_version }}.bundle
+          mkdir package/Firebase/Plugins/arm64
+          cp MetaTemplate/arm64.meta package/Firebase/Plugins/arm64.meta
+          lipo -remove x86_64 package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle -o package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle
+          lipo -remove arm64 package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle -o package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle
+          cp MetaTemplate/FirebaseCppApp-{version}.bundle.meta package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
+          sed -i '' 's/{version}/${{ env.version }}/' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
+          sed -i '' 's/{name_version}/${{ env.name_version }}/' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
       - name: Commit
         run: |
           git add --a
-          git commit -m "Package Update ${{ env.version }}"
+          git commit -m "Firebase SDk-v${{ env.version }}"
           git push origin
+      
+      - name: Cook UPM
+        run: |
+          ls package/
+          git subtree split -P package/ -b upm
+          git checkout upm
+          ls
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: upm
+          force: true
      

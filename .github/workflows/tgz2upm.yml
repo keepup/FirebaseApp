@@ -33,8 +33,11 @@ jobs:
           lipo -remove x86_64 package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle -o package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle
           lipo -remove arm64 package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle -o package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle
           cp MetaTemplate/FirebaseCppApp-{version}.bundle.meta package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
-          sed -i 's/{version}/${{ env.version }}/' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
-          sed -i 's/{name_version}/${{ env.name_version }}/' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
+          echo ">>> 1"
+          sed -i 's/{version}/${{ env.version }}/g' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
+          echo ">>> 2"
+          sed -i 's/{name_version}/${{ env.name_version }}/g' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
+          echo ">>> 3"
       - name: Commit
         run: |
           git add --a

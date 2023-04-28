@@ -25,7 +25,6 @@ jobs:
           curl ${{ env.base }}-${{ env.version }}.tgz --output package.tgz
           tar -xvzf package.tgz
           rm package.tgz
-          ls
       
       - name: Split MacOS Bundle
         run: |
@@ -34,11 +33,8 @@ jobs:
           lipo -remove x86_64 package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle -o package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle
           lipo -remove arm64 package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle -o package/Firebase/Plugins/x86_64/FirebaseCppApp-${{ env.name_version }}.bundle
           cp MetaTemplate/FirebaseCppApp-{version}.bundle.meta package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
-          echo ">>> 1"
           sed -i '' 's/{version}/${{ env.version }}/g' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
-          echo ">>> 2"
           sed -i '' 's/{name_version}/${{ env.name_version }}/g' package/Firebase/Plugins/arm64/FirebaseCppApp-${{ env.name_version }}.bundle.meta
-          echo ">>> 3"
       - name: Commit
         run: |
           git add --a
@@ -47,14 +43,20 @@ jobs:
       
       - name: Cook UPM
         run: |
-          ls package/
           git subtree split -P package/ -b upm
           git checkout upm
 
-      - name: Push changes
+      - name: Push UPM
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: upm
           force: true
+          
+      - name: Github Tag Bump
+        uses: anothrNick/github-tag-action@1.62.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: false
+          CUSTOM_TAG: ${{ env.version }}
           

@@ -12,8 +12,8 @@ jobs:
       max-parallel: 5
     env:
       base: https://dl.google.com/games/registry/unity/com.google.firebase.app/com.google.firebase.app
-      version: 2.0.0
-      name_version: 2.0.0
+      version: 3.0.0
+      name_version: 3.0.0
     steps:
       - uses: actions/checkout@v3
       - name: Config
@@ -41,7 +41,7 @@ jobs:
       - name: Cook Test
         run: |
           git subtree split -P Tmp/ -b test
-          git checkout upm
+          git checkout test
 
       - name: Push changes
         uses: ad-m/github-push-action@master

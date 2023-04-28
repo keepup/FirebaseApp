@@ -12,8 +12,8 @@ jobs:
       max-parallel: 5
     env:
       base: https://dl.google.com/games/registry/unity/com.google.firebase.app/com.google.firebase.app
-      version: 1.0.0
-      name_version: 1.0.0
+      version: 2.0.0
+      name_version: 2.0.0
     steps:
       - uses: actions/checkout@v3
       - name: Config
@@ -38,6 +38,18 @@ jobs:
           git commit -m "Firebase SDk-v${{ env.version }}"
           git push origin
           
+      - name: Cook Test
+        run: |
+          git subtree split -P Tmp/ -b test
+          git checkout upm
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: test
+          force: true
+      
       - name: Github Tag Bump
         uses: anothrNick/github-tag-action@1.62.0
         env:
